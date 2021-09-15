@@ -1,0 +1,28 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spend_club_points`(IN player_identification INT, IN points_spent INT)
+BEGIN
+INSERT INTO club_points_transactions(total_points, player_id)
+SELECT -(points_spent), player_identification 
+FROM 
+(select player_id, sum(total_points) as total_points
+from vip_club_points_transactions
+where player_id = player_identification 
+group by player_id) as agg_table
+WHERE player_id = player_identification 
+AND total_points >= ABS(points_spent);
+
+CREATE TEMPORARY TABLE update_club_points
+(SELECT u.user_id as user_id, v.player_id as player_id, sum(v.total_points) as club_points
+		FROM vip_club_points_transactions v, wp_usermeta u
+        where v.player_id = player_identification
+        and u.meta_value = convert(v.player_id using utf8)
+        and u.meta_key = 'xoo_aff_number_sug9j');
+
+UPDATE wp_usermeta u
+SET u.meta_value = (select club_points from update_club_points)
+WHERE u.meta_key = 'total_club_points_available'
+AND u.user_id = convert((select user_id from update_club_points) using utf8);
+
+DROP TEMPORARY TABLE update_club_points; 
+    
+
+END

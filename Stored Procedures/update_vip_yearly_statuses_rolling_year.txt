@@ -1,0 +1,32 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_vip_yearly_statuses`()
+BEGIN
+Create temporary table update_yearly_status(
+#get player VIP_Status From This Year
+select yearly_vip_status.*, multiplier
+from 
+(select yearly_vip_calculation.*,
+case 
+	when (year_vip_points between 100000 and 149999) then 'Diamond_I'
+    when (year_vip_points between 150000 and 249999) then 'Diamond_II'
+    when (year_vip_points between 250000 and 499999) then 'Diamond_III'
+    when (year_vip_points between 500000 and 999999) then 'Diamond_IV'
+    when (year_vip_points between 1000000 and 2499999) then 'Diamond_V'
+    when (year_vip_points between 2500000 and 5000000) then 'Black_Diamond'
+    else NULL
+    end as 'yearly_VIP_Status'
+from
+(select player_id
+,sum(fee_total*15) as year_vip_points
+,year(date_played) as year_played
+from vip_daily_uploads
+where month(date_played) between month(current_date) and month(current_date - interval 12 month)
+group by player_id, year_played) as yearly_vip_calculation) as yearly_vip_status
+,vip_definitions
+where vip_definitions.name = yearly_vip_status.yearly_VIP_status);
+
+INSERT INTO vip_yearly_historical_statuses(player_id, year_vip_points, year_played, yearly_vip_status, multiplier) 
+		SELECT * from update_yearly_status;
+
+END$$
+DELIMITER ;

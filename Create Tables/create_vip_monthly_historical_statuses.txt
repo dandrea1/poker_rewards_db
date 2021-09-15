@@ -1,0 +1,8 @@
+CREATE TABLE `poker_test2`.`vip_monthly_historical_statuses` (
+  `player_id` INT NOT NULL,
+  `fees` INT NULL,
+  `vip_points` VARCHAR(45) NULL,
+  `month_created` VARCHAR(45) NOT NULL,
+  `vip_status` VARCHAR(45) NULL,
+  `multiplier` DECIMAL(10,2) NULL,
+  PRIMARY KEY (`player_id`, `month_created`));

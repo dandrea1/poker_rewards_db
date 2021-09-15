@@ -1,0 +1,31 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_club_point_meta`()
+BEGIN
+    DECLARE c_player_id int;
+    DECLARE c_points decimal; 
+    DECLARE rowCount int; 
+    DECLARE currentRow int; 
+    DECLARE cur1 CURSOR FOR
+		SELECT v.player_id, sum(v.total_points) as club_points
+		FROM club_points_transactions v
+		group by player_id ;
+        
+    SET rowCount = (SELECT count(distinct v.player_id) FROM club_points_transactions v);
+    SET currentRow = 1; 
+        
+OPEN cur1;
+ FETCH NEXT FROM cur1 INTO c_player_id, c_points;
+	BEGIN
+			while (currentRow <= rowCount) DO
+				UPDATE user_meta u
+				SET u.club_points_available = c_points 
+			WHERE u.player_id = c_player_id;
+            set currentRow = currentRow + 1; 
+            fetch next from cur1 INTO c_player_id, c_points;
+            end while;
+	END;
+    
+Close cur1;
+
+END$$
+DELIMITER ;

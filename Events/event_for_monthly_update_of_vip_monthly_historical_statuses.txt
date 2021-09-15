@@ -1,0 +1,5 @@
+CREATE EVENT monthly_update_of_update_vip_monthly_historical_statuses
+    ON SCHEDULE EVERY 1 MONTH 
+    STARTS '2019-12-01 00:00:00'
+    DO
+     CALL `poker_test2`.`update_vip_monthly_historical_statuses`();

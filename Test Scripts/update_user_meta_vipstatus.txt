@@ -1,0 +1,42 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_this_month_vip_status_meta`()
+BEGIN
+	DECLARE c_player_id INT;
+    DECLARE c_vip_status VARCHAR(100);
+     DECLARE rowCount int; 
+	 DECLARE currentRow int; 
+     DECLARE cur3 CURSOR FOR
+		select this_month_vip_status.player_id,
+		CASE
+			WHEN vip_points <= 249.0 THEN 'Unranked'
+			WHEN vip_points <= 2000.0 THEN 'Bronze'
+			WHEN vip_points <= 2999.0 THEN 'Copper'
+			WHEN vip_points < 4999.0 THEN 'Silver'
+			WHEN vip_points < 14999.0 THEN 'Gold'
+			WHEN vip_points >= 15000.0 THEN 'Platinum'
+			ELSE 'Unranked'
+		END as 'VIP_status'
+			from 
+		(select player_id, sum(fee_total*15) as vip_points
+		from vip_daily_uploads
+		where month(date_played) = month(current_date())
+        group by player_id) as this_month_vip_status;
+        
+    SET rowCount = (select count(distinct player_id) as vip_points from vip_daily_uploads
+		where month(date_played) = month(current_date()));
+	SET currentRow = 1; 
+    
+    OPEN cur3; 
+    FETCH NEXT FROM cur3 INTO c_player_id, c_vip_status;
+		BEGIN
+				while (currentRow <= rowCount) DO
+                UPDATE user_meta u
+                SET this_month_vip_status = c_vip_status
+                WHERE u.player_id = c_player_id;
+                set currentRow = currentRow + 1; 
+				fetch next from cur3 INTO c_player_id, c_vip_status;
+				end while;
+		END;
+        
+     Close cur3;          
+     
+END

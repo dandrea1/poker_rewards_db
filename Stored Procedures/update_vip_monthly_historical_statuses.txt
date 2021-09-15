@@ -1,0 +1,48 @@
+USE `poker_test2`;
+DROP procedure IF EXISTS `update_vip_monthly_historical_statuses`;
+
+DELIMITER $$
+USE `poker_test2`$$
+CREATE PROCEDURE `update_vip_monthly_historical_statuses` ()
+BEGIN
+create temporary table monthly_historical_status(select player_id, 
+fees, 
+vip_points, 
+month_created, 
+VIP_status, 
+multiplier
+from 
+(select player_id
+,fees
+,vip_points
+,month_created
+, CASE
+	WHEN vip_points < 250.0 THEN 'Unranked'
+    WHEN vip_points < 2001.0 THEN 'Bronze'
+	WHEN vip_points < 3001.0 THEN 'Copper'
+	WHEN vip_points < 5000.0 THEN 'Silver'
+	WHEN vip_points < 14999.0 THEN 'Gold'
+    WHEN vip_points > 14999.0 THEN 'Platinum'
+	ELSE 'Unranked'
+END as 'VIP_status'
+from
+(select player_id
+,sum(fee_total) as fees
+,sum(fee_total*15) as vip_points
+,monthname(date_played) as month_created
+from vip_daily_uploads
+where month(date_played) = month(current_date - INTERVAL 1 MONTH)
+group by player_id, monthname(date_played)) as last_month_points) as last_month_VIP_status
+,vip_definitions
+where vip_definitions.name = last_month_VIP_status.VIP_status);
+
+
+INSERT INTO vip_monthly_historical_statuses(player_id, fees, vip_points, month_created, vip_status, multiplier) 
+		SELECT * from monthly_historical_status;
+
+drop temporary table monthly_historical_status;
+
+END$$
+
+DELIMITER ;
+

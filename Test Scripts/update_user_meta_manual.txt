@@ -1,0 +1,59 @@
+#update user_meta with club points to spend
+UPDATE
+    user_meta u
+    JOIN
+    club_points_transactions c ON u.player_id = c.player_id 
+SET
+    u.club_points_available = (select sum(total_points) from club_points_transactions where player_id = 1881067)
+WHERE
+    u.player_id = 1881067; 
+    
+#update user_meta with vip_points earned this month    
+UPDATE
+    user_meta u
+    JOIN
+    vip_daily_uploads v ON u.player_id = v.player_id 
+SET
+    u.total_vip_points_this_month = 
+		(select sum(fee_total*15) 
+        from vip_daily_uploads 
+        where player_id = 1881067
+        and month(date_played) = month(current_date()))
+WHERE
+    u.player_id = 1881067; 
+        
+#update user_meta with last month's vip_status 
+UPDATE
+    user_meta u
+    JOIN
+    vip_monthly_historical_statuses m ON u.player_id = m.player_id 
+SET
+	u.last_month_vip_status = 
+		(select vip_status
+        from vip_monthly_historical_statuses
+        where player_id = 1881067
+        and month_created = monthname(current_date - interval 1 month))
+WHERE u.player_id = 1881067;
+
+#update user_meta with this month's vip_status so far 
+UPDATE
+    user_meta u
+    JOIN
+    vip_daily_uploads d ON u.player_id = d.player_id 
+SET u.this_month_vip_status = 
+	(select 
+		CASE
+			WHEN vip_points <= 249.0 THEN 'Unranked'
+			WHEN vip_points <= 2000.0 THEN 'Bronze'
+			WHEN vip_points <= 2999.0 THEN 'Copper'
+			WHEN vip_points < 4999.0 THEN 'Silver'
+			WHEN vip_points < 14999.0 THEN 'Gold'
+			WHEN vip_points >= 15000.0 THEN 'Platinum'
+			ELSE 'Unranked'
+		END as 'VIP_status'
+	from 
+		(select sum(fee_total*15) as vip_points
+		from vip_daily_uploads
+		where player_id = 1881067
+		and month(date_played) = month(current_date())) as this_month_vip_status)
+WHERE u.player_id = 1881067;

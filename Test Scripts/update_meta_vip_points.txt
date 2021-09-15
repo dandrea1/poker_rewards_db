@@ -1,0 +1,32 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_vip_points_meta`()
+BEGIN
+	 DECLARE c_player_id int;
+     DECLARE c_vip_points decimal; 
+	 DECLARE rowCount int; 
+	 DECLARE currentRow int; 
+     DECLARE cur2 CURSOR FOR
+		select player_id, sum(fee_total*15) as vip_points_this_month
+        from vip_daily_uploads 
+        where month(date_played) = month(current_date())
+        group by player_id;
+        
+       SET rowCount = (SELECT count(distinct v.player_id) FROM vip_daily_uploads v);
+	   SET currentRow = 1; 
+       
+	OPEN cur2;
+    
+    FETCH NEXT FROM cur2 INTO c_player_id, c_vip_points;
+		BEGIN
+			while (currentRow <= rowCount) DO
+            UPDATE user_meta u
+            SET u.total_vip_points_this_month = c_vip_points
+            WHERE u.player_id = c_player_id;
+            set currentRow = currentRow + 1; 
+            fetch next from cur2 INTO c_player_id, c_vip_points;
+            end while;
+		END;
+
+    Close cur2;    
+END$$
+DELIMITER ;

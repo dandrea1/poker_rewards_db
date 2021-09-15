@@ -1,0 +1,12 @@
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('1', 'Unranked', '1', '0', '249');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('2', 'Bronze', '1', '250', '2000');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('3', 'Copper', '1.2', '2001', '2999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('4', 'Silver', '1.3', '3000', '4999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('5', 'Gold', '1.5', '5000', '14999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('6', 'Platinum', '1.8', '15000', '99999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('7', 'Diamond_I', '2.0', '100000', '149999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('8', 'Diamond_II', '2.1', '150000', '249999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('9', 'Diamond_III', '2.2', '250000', '499999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('10', 'Diamond_IV', '2.3', '500000', '999999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('11', 'Diamond_V', '2.4', '1000000', '2499999');
+INSERT INTO `poker_test2`.`vip_definitions` (`id`, `name`, `multiplier`, `min_value`, `max_value`) VALUES ('12', 'Black_Diamond', '2.5', '2500000', '5000000');

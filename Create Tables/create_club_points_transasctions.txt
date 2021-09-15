@@ -1,0 +1,6 @@
+CREATE TABLE `club_points_transactions` (
+  `date_played` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `total_points` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  PRIMARY KEY (`total_points`,`player_id`,`date_played`)
+) 

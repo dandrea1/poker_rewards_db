@@ -1,0 +1,9 @@
+CREATE TABLE `vip_definitions` (
+  `id` int NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `multiplier` decimal(10,2) NOT NULL,
+  `min_value` int NOT NULL,
+  `max_value` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `multiplier_idx` (`multiplier`)
+);

@@ -1,0 +1,14 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spend_club_points`(IN player_identification INT, IN points_spent INT)
+BEGIN
+INSERT INTO club_points_transactions(total_points, player_id)
+SELECT -(points_spent), player_identification 
+FROM 
+(select player_id, sum(total_points) as total_points
+from club_points_transactions
+where player_id = player_identification 
+group by player_id) as agg_table
+WHERE player_id = player_identification 
+AND total_points >= ABS(points_spent);
+END$$
+DELIMITER ;
